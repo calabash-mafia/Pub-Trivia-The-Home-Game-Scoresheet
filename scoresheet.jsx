@@ -1,24 +1,23 @@
 'use strict';
 
-class LikeButton extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { liked: false };
-  }
-
-  render() {
-    if (this.state.liked) {
-      return 'You liked this.';
+class TriviaScoresheet extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            hello: 'world'
+        };
     }
 
-  // Display a "Like" <button>
-  return (
-    <button onClick={() => this.setState({ liked: true })}>
-      Like
-    </button>
-  );
-  }
+    render() {
+        var today = new Date(Date.now());
+        return (
+            <div>
+                <h1 className="mt-5">Pub Trivia: The Home Game</h1>
+                <p>Online scorecard for {today.toDateString()}</p>
+            </div>
+        );
+    }
 }
 
-const domContainer = document.querySelector('#like_button_container');
-ReactDOM.render(React.createElement(LikeButton), domContainer);
+const domContainer = document.querySelector('#trivia_scoresheet');
+ReactDOM.render(React.createElement(TriviaScoresheet), domContainer);
