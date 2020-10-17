@@ -10,17 +10,271 @@
     <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
     <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
-    <script src="scoresheet.jsx" type="text/babel"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
     <style>
+        /* Color palette:
+        Maroon:  #800000
+        Dark grey:  #767676
+        Light grey: : #D6D6CE
+        Yellow:  #FFA319
+        Orange: #C16622
+        Red:  #8F3931
+        Light green:  #8A9045
+        Dark green: #58593F
+        Blue: #155F83
+        Violet:  #350E20 */
+
         body {
             color: #800000;
+            background-color: rgb(214 214 206 / 50%);
+        }
+        .btn-primary {
+            background-color: #155F83;
+            border-color: #155F83;
+        }
+        .btn-primary:hover {
+            background-color: #5B8FA8;
+            border-color: #0F425C;
+        }
+        .text-muted {
+            color: #767676;
+        }
+        .alert.alert-warning {
+            background-color: #FFB547;
+            color: #58593F;
+            border-color: #58593F;
+        }
+        .alert-dismissible.alert-warning, .alert-dismissible.alert-warning .alert-link, .alert-dismissible.alert-warning .close:before {
+            color: #58593F;
+        }
+        .btn.btn-danger {
+            background-color: #8F3931;
+            border-color: #8F3931;
+        }
+        .btn.btn-danger:hover {
+            background-color: #642822;
+            border-color: #642822;
+        }
+        .form-control {
+            border-color: #767676;
         }
     </style>
 </head>
 
 <body>
     <div class="container">
+        <div class="alert alert-dismissible alert-warning mt-5">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            <h2>Welcome to the online scoresheet!</h2>
+            <p><strong>Aren't you lucky!</strong> Now you can receive the joys of being a scorekeeper too! Here is how to use this online app scoresheet thingy:</p>
+            <p>
+                <ol>
+                    <li>asdf</li>
+                    <li>asdf</li>
+                    <li>asdf</li>
+                </ol>
+            </p>
+        </div>
         <div id="trivia_scoresheet"></div>
     </div>
+    <script type="text/babel">
+
+        const RANDOM_TEAM_NAMES = ["Wide maintenance", "Jagged assistant", "Stale performance", "Loud history", "Thin confusion", "Learned database", "Good hospital", "Plain employee", "Fixed conclusion", "Glib magazine", "Wry inflation", "Best foundation", "Free director", "Two solution", "Grey cabinet", "Cute studio", "Cheap medicine", "Slim agency", "Wrong difference", "Far profession", "Drab article", "Ten cigarette", "Drunk equipment", "Eight tradition", "Old intention", "Pink assistance", "Quick charity", "Small video", "Green reaction", "Tan energy"];
+        const NORMAL_TEAMS = ["J. Burreaux", "BoJo does...", "Revenge of the...", "Team Suki", "Fetarogie and ...", "Piere and the...", "The Canucks...", "Krullin'...", "Bitsy and Fiancé", "Team Aimee +1"];
+
+        // https://stackoverflow.com/a/58325961
+        function genHexId() {
+            var len = 8;
+            const hex = '0123456789ABCDEF';
+            let output = '';
+            for (let i = 0; i < len; ++i) {
+                output += hex.charAt(Math.floor(Math.random() * hex.length));
+            }
+            return output;
+        }
+
+        // https://stackoverflow.com/a/44071316
+        const shuffleArray = (array) => {
+            let currentIndex = array.length;
+            let temporaryValue;
+            let randomIndex;
+            const newArray = array.slice();
+            // While there remains elements to shuffle...
+            while (currentIndex) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex -= 1;
+                // Swap it with the current element.
+                temporaryValue = newArray[currentIndex];
+                newArray[currentIndex] = newArray[randomIndex];
+                newArray[randomIndex] = temporaryValue;
+            }
+            return newArray;
+        };
+
+        function TeamRoundScoreDropdown(props) {
+            return (
+                <select className="form-control form-control-lg" value={props.score} onChange={props.handleTeamScoreChange}>
+                    <option></option>
+                    <option>1</option>
+                    <option>2</option>
+                    <option>3</option>
+                    <option>4</option>
+                    <option>5</option>
+                    <option>6</option>
+                    <option>QM</option>
+                </select>
+            )
+        }
+
+        class TriviaScoresheet extends React.Component {
+            constructor(props) {
+                super(props);
+                this.state = {
+                    hasGameStarted: false,
+                    teams: shuffleArray(NORMAL_TEAMS).map(n => {
+                        return {
+                            id: genHexId(),
+                            name: n,
+                            round1: '',
+                            round2: '',
+                            round3: '',
+                            round4: ''
+                        }
+                    })
+                };
+                this.handleAddTeam = this.handleAddTeam.bind(this);
+                this.handleRemoveTeam = this.handleRemoveTeam.bind(this);
+                this.handleTeamNameChange = this.handleTeamNameChange.bind(this);
+                this.handleTeamScoreChange = this.handleTeamScoreChange.bind(this);
+                
+            }
+
+            // componentDidMount() {
+            //     const rememberMe = localStorage.getItem('rememberMe') === 'true';
+            //     const user = rememberMe ? localStorage.getItem('user') : '';
+            //     this.setState({ user, rememberMe });
+            // }
+
+
+            /*
+            var testObject = { 'one': 1, 'two': 2, 'three': 3 };
+            // Put the object into storage
+            localStorage.setItem('testObject', JSON.stringify(testObject));
+            // Retrieve the object from storage
+            var retrievedObject = localStorage.getItem('testObject');
+            console.log('retrievedObject: ', JSON.parse(retrievedObject));
+            */
+
+            // RANDOM_TEAM_NAMES[Math.floor(Math.random()*RANDOM_TEAM_NAMES.length)];
+
+            handleAddTeam() {
+                var newTeams = this.state.teams;
+                newTeams.push({
+                    id: genHexId(),
+                    name: RANDOM_TEAM_NAMES[Math.floor(Math.random()*RANDOM_TEAM_NAMES.length)],
+                    round1: '', round2: '', round3: '', round4: '',
+                });
+                this.setState({teams: newTeams});
+            }
+
+            handleRemoveTeam(teamIdToRemove) {
+                var newTeams = this.state.teams.filter(t => t.id != teamIdToRemove);
+                this.setState({teams: newTeams});
+            }
+
+            handleTeamNameChange(teamIndex, e) {
+                var newTeams = this.state.teams;
+                newTeams[teamIndex].name = e.target.value;
+                this.setState({teams: newTeams});
+            }
+
+            handleTeamScoreChange(roundNum, teamIndex, e) {
+                var newTeams = this.state.teams;
+                newTeams[teamIndex][roundNum] = e.target.value;
+                this.setState({
+                    teams: newTeams,
+                    hasGameStarted: true
+                });
+            }
+
+            render() {
+                var today = new Date(Date.now());
+
+                var teamRows = this.state.teams.map((t, i) => {
+                    var removeTeamButtonCol = null;
+                    if (this.state.hasGameStarted === false) {
+                        removeTeamButtonCol = (
+                            <div className="col">
+                                <button type="button" title={`Remove '${t.name}' from the scoresheet`} onClick={this.handleRemoveTeam.bind(null, t.id)} className="btn btn-danger">⊗</button>
+                            </div>
+                        )
+                    }
+                    return (
+                        <div key={t.id} className="row mt-2">
+                            <div className="col-4">
+                                <input type="text" onChange={this.handleTeamNameChange.bind(null, i)} className="form-control form-control-lg" value={t.name} />
+                            </div>
+                            <div className="col">
+                                <TeamRoundScoreDropdown score={t.round1} handleTeamScoreChange={this.handleTeamScoreChange.bind(null, "round1", i)} />
+                            </div>
+                            <div className="col">
+                                <TeamRoundScoreDropdown score={t.round2} handleTeamScoreChange={this.handleTeamScoreChange.bind(null, "round2", i)} />
+                            </div>
+                            <div className="col">
+                                <TeamRoundScoreDropdown score={t.round3} handleTeamScoreChange={this.handleTeamScoreChange.bind(null, "round3", i)} />
+                            </div>
+                            <div className="col">
+                                <TeamRoundScoreDropdown score={t.round4} handleTeamScoreChange={this.handleTeamScoreChange.bind(null, "round4", i)} />
+                            </div>
+                            {removeTeamButtonCol}
+                        </div>
+                    )
+                })
+
+                var addTeamButton = null;
+                var removeTeamButtonColHeader = null;
+                if (this.state.hasGameStarted === false) {
+                    addTeamButton = <button type="button" onClick={this.handleAddTeam} className="btn btn-sm btn-outline-dark mt-2">＋ Add team</button>;
+                    removeTeamButtonColHeader = <div className="col">&nbsp;</div>;
+                }
+                return (
+                    <div>
+                        <h1 className="mt-5 mb-0">Pub Trivia: The Home Game</h1>
+                        <p className="text-muted">For {today.toDateString()}</p>
+                        <h2>Scoresheet</h2>
+                        <div className="row mt-2">
+                            <div className="col-4">
+                                <strong>Team name</strong>
+                            </div>
+                            <div className="col">
+                                <strong>Round 1</strong>
+                            </div>
+                            <div className="col">
+                                <strong>Round 2</strong>
+                            </div>
+                            <div className="col">
+                                <strong>Round 3</strong>
+                            </div>
+                            <div className="col">
+                                <strong>Round 4</strong>
+                            </div>
+                            {removeTeamButtonColHeader}
+                        </div>
+                        {teamRows}
+                        {addTeamButton}
+                        <div className="text-center">
+                            <button type="button" className="btn btn-primary btn-lg mt-4">Tally up scores for round and whatnot</button>
+                        </div>
+                        <h2 className="mt-5">Ranking table</h2>
+                    </div>
+                );
+            }
+        }
+
+        const domContainer = document.querySelector('#trivia_scoresheet');
+        ReactDOM.render(React.createElement(TriviaScoresheet), domContainer);
+
+    </script>
 </body>
 </html>
