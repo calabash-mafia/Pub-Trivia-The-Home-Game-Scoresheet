@@ -64,7 +64,21 @@
             box-shadow: 0 0 0 0.2rem rgb(255 163 25 / .5);
             border-color: #FFA319;
         }
-
+        #final-results {
+            border-color: #155F83;
+            border-width: 4px;
+            background-color: rgb(21 95 131 / .05);
+        }
+        #final-results h1 {
+            color: #155F83;
+        }
+        #final-results ul, #final-results ol {
+            font-size: 1.25em;
+            color: #333;
+        }
+        #final-results p {
+            color: #333;
+        }
 
         /* https://developer.mozilla.org/en-US/docs/Web/HTML/Element/blink */
         blink {
@@ -90,6 +104,20 @@
         }
         #footer a {
             color: #D6D6CE;
+        }
+
+        table {
+            font-size: 1.4em;
+        }
+        table th, table td {
+            background-color: transparent;
+        }
+        table thead {
+            background-color: #8A9045;
+            color: #fff;
+        }
+        .table th, .table td {
+            border-top: none;
         }
 
     </style>
@@ -120,6 +148,8 @@
 
         const RANDOM_TEAM_NAMES = ["Wide maintenance", "Jagged assistant", "Stale performance", "Loud history", "Thin confusion", "Learned database", "Good hospital", "Plain employee", "Fixed conclusion", "Glib magazine", "Wry inflation", "Best foundation", "Free director", "Two solution", "Grey cabinet", "Cute studio", "Cheap medicine", "Slim agency", "Wrong difference", "Far profession", "Drab article", "Ten cigarette", "Drunk equipment", "Eight tradition", "Old intention", "Pink assistance", "Quick charity", "Small video", "Green reaction", "Tan energy"];
         const NORMAL_TEAMS = ["J. Burreaux", "BoJo does...", "Revenge of the...", "Team Suki", "Fetarogie and ...", "Piere and the...", "The Canucks...", "Krullin'...", "Bitsy and Fiancé", "Team Aimee +1"];
+        const NUM_ROUNDS = 4;
+        const QM_DISPLAY_CHAR = '👑';
 
         // https://stackoverflow.com/a/58325961
         function genHexId() {
@@ -150,6 +180,13 @@
             return newArray;
         };
 
+        function SortByKey(array, key) {
+            return array.sort(function(a, b) {
+                var x = a[key]; var y = b[key];
+                return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+            });
+        }
+
         function TeamRoundScoreDropdown(props) {
             return (
                 <select className="form-control form-control-lg" value={props.score} onChange={props.handleTeamScoreChange}>
@@ -160,17 +197,20 @@
                     <option>4</option>
                     <option>5</option>
                     <option>6</option>
-                    <option value="QM">🤓 👑</option>
+                    <option value="QM">{QM_DISPLAY_CHAR}</option>
                 </select>
             )
         }
 
         class TriviaScoresheet extends React.Component {
+            
             constructor(props) {
                 super(props);
-                this.state = {
-                    hasGameStarted: false,
-                    teams: shuffleArray(NORMAL_TEAMS).map(n => {
+                // Retrieve the object from storage
+                var retrievedTeamsStr = localStorage.getItem(`trivia_${this.getTodayStr()}`);
+                var initialTeams = JSON.parse(retrievedTeamsStr);
+                if (initialTeams == null) {
+                    initialTeams = shuffleArray(NORMAL_TEAMS).map(n => {
                         return {
                             id: genHexId(),
                             name: n,
@@ -180,31 +220,61 @@
                             round4: ''
                         }
                     })
+                }
+                // Set the state
+                this.state = {
+                    hasGameStarted: false,
+                    teams: initialTeams,
+                    calculatedScores: null,
+                    // teams: [
+                    //     {
+                    //         id: genHexId(),
+                    //         name: NORMAL_TEAMS[0],
+                    //         round1: '3',
+                    //         round2: '4',
+                    //         round3: 'QM',
+                    //         round4: '2'
+                    //     }, {
+                    //         id: genHexId(),
+                    //         name: NORMAL_TEAMS[1],
+                    //         round1: '1',
+                    //         round2: 'QM',
+                    //         round3: '4',
+                    //         round4: '2'
+                    //     }, {
+                    //         id: genHexId(),
+                    //         name: NORMAL_TEAMS[2],
+                    //         round1: '5',
+                    //         round2: '3',
+                    //         round3: '2',
+                    //         round4: 'QM'
+                    //     }, {
+                    //         id: genHexId(),
+                    //         name: NORMAL_TEAMS[3],
+                    //         round1: 'QM',
+                    //         round2: '2',
+                    //         round3: '4',
+                    //         round4: '4'
+                    //     }, {
+                    //         id: genHexId(),
+                    //         name: NORMAL_TEAMS[4],
+                    //         round1: '3',
+                    //         round2: '4',
+                    //         round3: '3',
+                    //         round4: '3'
+                    //     }, 
+                    // ]
                 };
                 this.handleAddTeam = this.handleAddTeam.bind(this);
                 this.handleRemoveTeam = this.handleRemoveTeam.bind(this);
                 this.handleTeamNameChange = this.handleTeamNameChange.bind(this);
                 this.handleTeamScoreChange = this.handleTeamScoreChange.bind(this);
-                
+                this.getAllTeamRows = this.getAllTeamRows.bind(this);
+                this.getQMAdjust = this.getQMAdjust.bind(this);
+                this.handleTallyRound = this.handleTallyRound.bind(this);
+                this.getCurrentRoundNum = this.getCurrentRoundNum.bind(this);
+                this.handleSaveScoresheet = this.handleSaveScoresheet.bind(this);
             }
-
-            // componentDidMount() {
-            //     const rememberMe = localStorage.getItem('rememberMe') === 'true';
-            //     const user = rememberMe ? localStorage.getItem('user') : '';
-            //     this.setState({ user, rememberMe });
-            // }
-
-
-            /*
-            var testObject = { 'one': 1, 'two': 2, 'three': 3 };
-            // Put the object into storage
-            localStorage.setItem('testObject', JSON.stringify(testObject));
-            // Retrieve the object from storage
-            var retrievedObject = localStorage.getItem('testObject');
-            console.log('retrievedObject: ', JSON.parse(retrievedObject));
-            */
-
-            // RANDOM_TEAM_NAMES[Math.floor(Math.random()*RANDOM_TEAM_NAMES.length)];
 
             handleAddTeam() {
                 var newTeams = this.state.teams;
@@ -234,6 +304,143 @@
                     teams: newTeams,
                     hasGameStarted: true
                 });
+            }
+
+            getTodayStr() {
+                var today = new Date(Date.now());
+                return today.toDateString();
+            }
+            
+            getAllTeamRows() {
+                var teamRows = this.state.teams.map(t => {
+                    return [t.name, t.round1, t.round2, t.round3, t.round4];
+                })
+                return teamRows;
+            }
+
+            getCurrentRoundNum() {
+                for (let rnd = 1; rnd <= NUM_ROUNDS; rnd++) {
+                    if (this.state.teams[0][`round${rnd}`] === "") {
+                        return rnd - 1;
+                    }
+                }
+                return -1;
+            }
+
+            getQMAdjust(qmTeamRow) {
+                // Get QuizMaster round
+                var qmRoundIdx = null;
+                for (let i = 1; i <= NUM_ROUNDS + 1; i++) {
+                    if (qmTeamRow[i] === "QM") {
+                    qmRoundIdx = i;
+                    }
+                }
+                // Return if team wasn't a QM for a round
+                if (qmRoundIdx === null) {
+                    return null;
+                }
+                // Get all the team rwos
+                var allTeamRows = this.getAllTeamRows();
+                // Get the other team scores for the round team was QM
+                var qmRoundScores = allTeamRows.filter(t => t[qmRoundIdx] != "QM").map(t => t[qmRoundIdx]);
+                // Get the current round
+                var currentRound = this.getCurrentRoundNum();
+                // If this is the first round, then return the median score for the round
+                if (currentRound == 1) {
+                    return {'score': Math.ceil(math.median(qmRoundScores)), 'teams': ['[Round median]']};
+                }
+                // Finally, calculate the mean square errors between the QM team and other teams
+                console.log("QM Adjust:", qmTeamRow);
+                var teamMSEValues = allTeamRows.filter(tr => tr[0] != qmTeamRow[0]).map(tr => {
+                    var teamSquareErrors = [];
+                    // Loop through the rounds
+                    for (let roundNum = 1; roundNum <= NUM_ROUNDS; roundNum++) {
+                        if (roundNum != qmRoundIdx && tr[roundNum] != "QM" && tr[roundNum] != "") {
+                            var scoreDiffSquared = (qmTeamRow[roundNum] - tr[roundNum]) ** 2;
+                            teamSquareErrors.push(scoreDiffSquared);
+                        }
+                    }
+                    // If we don't have square of score diffs to average, then skip this team
+                    // This could happen in Round 2, when each team has been QM.
+                    if (teamSquareErrors.length === 0) {
+                        return null;
+                    }
+                    // Add the MSE and team to the list of tuples
+                    var mse = math.mean(teamSquareErrors);
+                    console.log("  -", mse, tr[0]);
+                    return {'team': tr[0], 'mse': mse, 'score': tr[qmRoundIdx]};
+                }).filter(msev => msev != null);
+                // Sort the scores
+                teamMSEValues = SortByKey(teamMSEValues, 'mse');
+                // Loop through the teams
+                // Get the final MSE lookout info
+                var mseTeamNames = teamMSEValues.filter(item => item.mse == teamMSEValues[0].mse).map(item => item.team);
+                var bestMSEScore = Math.max(...teamMSEValues.filter(item => item.mse == teamMSEValues[0].mse).map(item => item.score));
+                console.log("Lookalike:", bestMSEScore, mseTeamNames);
+                return {'score': bestMSEScore, 'teams': mseTeamNames};
+            }
+
+            handleTallyRound() {
+                console.log('handleTallyRound');
+                // Calculate the scores
+                var calculatedScores = this.state.teams.map(t => {
+                    // Initialize the team score dict
+                    var teamCalcScore = {
+                        id: t.id,
+                        name: t.name,
+                        total: 0
+                    }
+                    // Get the QM adjustment
+                    var tr = [t.name, t.round1, t.round2, t.round3, t.round4];
+                    var teamQMAdjust = this.getQMAdjust(tr);
+                    // Process each round
+                    for (let rnd = 1; rnd <= NUM_ROUNDS; rnd++) {
+                        var roundName = `round${rnd}`;
+                        // Add to the total
+                        var roundInt = parseInt(t[roundName]);
+                        var roundScoreLabel = t[roundName];
+                        var roundScoreStr = t[roundName];
+                        if (!isNaN(roundInt)) {
+                            teamCalcScore.total = teamCalcScore.total + roundInt;
+                        }
+                        // Integrate the QM data
+                        if (t[roundName] == 'QM') {
+                            teamCalcScore.total = teamCalcScore.total + parseInt(teamQMAdjust.score);
+                            roundScoreLabel = <span>{teamQMAdjust.score}&nbsp;<sup>{QM_DISPLAY_CHAR}</sup></span>;
+                            roundScoreStr = `${teamQMAdjust.score} (QM)`
+                            teamCalcScore.lookalikeTeams = teamQMAdjust.teams.join('; ');
+                        }
+                        // Add the round value
+                        teamCalcScore[`round${rnd}ScoreLabel`] = roundScoreLabel;
+                        teamCalcScore[`round${rnd}ScoreStr`] = roundScoreStr;
+                    }
+                    return teamCalcScore;
+                })
+                // Sort the scores
+                calculatedScores = SortByKey(calculatedScores, 'total').reverse();
+                // Shuffle the team score table
+                var shuffledTeams = shuffleArray(this.state.teams)
+                // Update the state
+                this.setState({
+                    calculatedScores: calculatedScores,
+                    teams: shuffledTeams
+                });
+                // Put the object into storage
+                localStorage.setItem(`trivia_${this.getTodayStr()}`, JSON.stringify(shuffledTeams));
+            }
+
+            handleSaveScoresheet() {
+                var rows = this.state.calculatedScores.map(cs => {
+                    return [`"${cs.name}"`, cs.round1ScoreStr, cs.round2ScoreStr, cs.round3ScoreStr, cs.round4ScoreStr, cs.total, `"${cs.lookalikeTeams}"`];
+                })
+                let csvContent = "data:text/csv;charset=utf-8,";
+                csvContent += "Team,Round 1,Round 2,Round 3,Round 4,Total,QM Lookalikes\r\n";
+                rows.forEach(function(rowArray) {
+                    let row = rowArray.join(",");
+                    csvContent += row + "\r\n";
+                });
+                var encodedUri = encodeURI(csvContent);
+                window.open(encodedUri);
             }
 
             render() {
@@ -269,17 +476,130 @@
                         </div>
                     )
                 })
-
+                // Team adding / removing
                 var addTeamButton = null;
                 var removeTeamButtonColHeader = null;
                 if (this.state.hasGameStarted === false) {
                     addTeamButton = <button type="button" onClick={this.handleAddTeam} className="btn btn-sm btn-outline-dark mt-2">＋ Add team</button>;
                     removeTeamButtonColHeader = <div className="col">&nbsp;</div>;
                 }
+                // Ranking table
+                var rankingTableEl = null;
+                if (this.state.calculatedScores !== null) {
+                    var tableRows = this.state.calculatedScores.map((cs, i) => {
+                        return (
+                            <tr key={cs.id}>
+                                <th scope="row">{cs.name}</th>
+                                <td>{cs.round1ScoreLabel}</td>
+                                <td>{cs.round2ScoreLabel}</td>
+                                <td>{cs.round3ScoreLabel}</td>
+                                <td>{cs.round4ScoreLabel}</td>
+                                <td>{cs.total}</td>
+                                <td>{cs.lookalikeTeams}</td>
+                            </tr>
+                        )
+                    })
+                    rankingTableEl = (
+                        <div className="mb-5">
+                            <h2 className="mt-5">Ranking table</h2>
+                            <table className="table">
+                                <thead>
+                                    <tr>
+                                    <th scope="col">Team</th>
+                                    <th scope="col">Round 1</th>
+                                    <th scope="col">Round 2</th>
+                                    <th scope="col">Round 3</th>
+                                    <th scope="col">Round 4</th>
+                                    <th scope="col">Total</th>
+                                    <th scope="col">QM Lookalike</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {tableRows}
+                                </tbody>
+                            </table>
+                        </div>
+                    )
+                }
+                // Final results info
+                var finalResultsEl = null;
+                if (this.state.calculatedScores != null && this.state.calculatedScores[0].round4ScoreLabel != '') {
+                    // Get the sorted ranked scores
+                    var scoreValues = [...new Set(this.state.calculatedScores.map(cs => cs.total))]; 
+                    var firstPlaceScore = scoreValues[0];
+                    var secondPlaceScore = scoreValues[1];
+                    var lastPlaceScore = scoreValues[scoreValues.length - 1];
+                    // Determine winner
+                    var winningTeamsEls = this.state.calculatedScores.filter(cs => cs.total == firstPlaceScore).map(cs => <li key={cs.id}>{cs.name}</li>);
+                    var winningTeamsTieStr = null;
+                    if (winningTeamsEls.length > 1) {
+                        winningTeamsTieStr = "s (TIE!)"
+                    }
+                    // Determine second place
+                    var secondTeamsEls = this.state.calculatedScores.filter(cs => cs.total == secondPlaceScore).map(cs => <li key={cs.id}>{cs.name}</li>);
+                    var secondTeamsTieStr = null;
+                    if (secondTeamsEls.length > 1) {
+                        secondTeamsTieStr = " (TIE!)"
+                    }
+                    // Determine last place
+                    var lastTeamsEls = this.state.calculatedScores.filter(cs => cs.total == lastPlaceScore).map(cs => <li key={cs.id}>{cs.name}</li>);
+                    var lastTeamsTieStr = null;
+                    if (lastTeamsEls.length > 1) {
+                        lastTeamsTieStr = " (TIE!)"
+                    }
+                    // Random QMs for next week
+                    var randomOtherTeamsEls = this.state.calculatedScores.filter(cs => {
+                        return cs.total != firstPlaceScore && cs.total != secondPlaceScore && cs.total != lastPlaceScore;
+                    }).map(cs => <li key={cs.id}>{cs.name}</li>);
+                    if (randomOtherTeamsEls.length == 0) {
+                        randomOtherTeamsEls = [
+                            <li key='whack1'>🤯🤯🤯</li>,
+                            <li key='whack2'>ALL TEAMS FIRST, SECOND, OR LAST PLACE!?!?!?</li>,
+                            <li key='whack3'>🤯🤯🤯</li>
+                        ];
+                    }
+                    // Output the results
+                    finalResultsEl = (
+                        <div id="final-results" className="jumbotron mt-5">
+                            <h1 className="display-3">Final results</h1>
+                            <div className="row">
+                                <div className="col-sm-3">
+                                    <h3>Winner{winningTeamsTieStr}</h3>
+                                    <ul>
+                                        {winningTeamsEls}
+                                    </ul>
+                                </div>
+                                <div className="col-sm-3">
+                                    <h3>Second place{secondTeamsTieStr}</h3>
+                                    <ul>
+                                        {secondTeamsEls}
+                                    </ul>
+                                </div>
+                                <div className="col-sm-3">
+                                    <h3>Last place{lastTeamsTieStr}</h3>
+                                    <ul>
+                                        {lastTeamsEls}
+                                    </ul>
+                                </div>
+                                <div className="col-sm-3">
+                                    <h3>Everybody else</h3>
+                                    <ol style={{listStyle: 'lower-alpha'}}>
+                                        {randomOtherTeamsEls}
+                                    </ol>
+                                    <p>(randomized for easy picking of next week's quizmasters)</p>
+                                </div>                                
+                            </div>
+                            <div className="text-center mt-5">
+                                <button className="btn btn-sm btn-outline-secondary" onClick={this.handleSaveScoresheet}>💾 Save scoresheet to CSV</button>
+                            </div>
+                        </div>
+                    )
+                    
+                }
                 return (
                     <div>
                         <h1 className="mt-5 mb-0">Pub Trivia: The Home Game 🍻</h1>
-                        <p className="text-muted">For {today.toDateString()}</p>
+                        <p className="text-muted">For {this.getTodayStr()}</p>
                         <h2>Scoresheet</h2>
                         <div className="row mt-2">
                             <div className="col-4">
@@ -302,9 +622,10 @@
                         {teamRows}
                         {addTeamButton}
                         <div className="text-center">
-                            <button type="button" className="btn btn-primary btn-lg mt-4">Tally up scores for round and whatnot</button>
+                            <button type="button" className="btn btn-primary btn-lg mt-4" onClick={this.handleTallyRound}>Tally up scores for round and whatnot</button>
                         </div>
-                        <h2 className="mt-5">Ranking table</h2>
+                        {rankingTableEl}
+                        {finalResultsEl}
                     </div>
                 );
             }
