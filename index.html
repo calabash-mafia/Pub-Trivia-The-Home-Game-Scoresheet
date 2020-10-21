@@ -13,6 +13,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/7.5.1/math.min.js" integrity="sha512-6SHRAV8GhJ+3WvGPKQNsBpLj7J9QF9JFwH7nPSRLtH/OqFrlXRd54Z+QDgw7xj1f7dV8c50sKhZYr/xGPlMoiw==" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.slim.min.js" integrity="sha512-/DXTXr6nQodMUiq+IUJYCt2PPOUjrHJ9wFrqpJ3XkgPNOZVfMok7cRw6CSxyCQxXn6ozlESsSh1/sMCTF1rL/g==" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.3/js/bootstrap.bundle.min.js" integrity="sha512-iceXjjbmB2rwoX93Ka6HAHP+B76IY1z0o3h+N1PeDtRSsyeetU3/0QKJqGyPJcX63zysNehggFwMC/bi7dvMig==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.2/FileSaver.min.js" integrity="sha512-k8F8QynmFNURwbUJC8drKA+fo3YfNvjqKzStdydD6au+MzvxBoRnxH8E31RJXwDY9DrnEiPhh9wBoDSIxhkyHQ==" crossorigin="anonymous"></script>
     <style>
         /* Color palette:
         Maroon:  #800000
@@ -236,7 +237,9 @@
                 this.getQMAdjust = this.getQMAdjust.bind(this);
                 this.handleTallyRound = this.handleTallyRound.bind(this);
                 this.getCurrentRoundNum = this.getCurrentRoundNum.bind(this);
-                this.handleSaveScoresheet = this.handleSaveScoresheet.bind(this);
+                this.handleSaveScoresheetToCSV = this.handleSaveScoresheetToCSV.bind(this);
+                this.handleSaveScoresheetToJSON = this.handleSaveScoresheetToJSON.bind(this);
+                
             }
 
             handleAddTeam() {
@@ -392,18 +395,27 @@
                 localStorage.setItem(`trivia_${this.getTodayStr()}`, JSON.stringify(shuffledTeams));
             }
 
-            handleSaveScoresheet() {
+            handleSaveScoresheetToCSV() {
                 var rows = this.state.calculatedScores.map(cs => {
-                    return [`"${cs.name}"`, cs.round1ScoreStr, cs.round2ScoreStr, cs.round3ScoreStr, cs.round4ScoreStr, cs.total, `"${cs.lookalikeTeams}"`];
+                    var lookalikeTeamsStr = cs.lookalikeTeams || "";
+                    return [`"${cs.name}"`, cs.round1ScoreStr, cs.round2ScoreStr, cs.round3ScoreStr, cs.round4ScoreStr, cs.total, `"${lookalikeTeamsStr}"`];
                 })
-                let csvContent = "data:text/csv;charset=utf-8,";
-                csvContent += "Team,Round 1,Round 2,Round 3,Round 4,Total,QM Lookalikes\r\n";
+                let csvContent = "Team,Round 1,Round 2,Round 3,Round 4,Total,QM Lookalikes\r\n";
                 rows.forEach(function(rowArray) {
                     let row = rowArray.join(",");
                     csvContent += row + "\r\n";
                 });
-                var encodedUri = encodeURI(csvContent);
-                window.open(encodedUri);
+                var blob = new Blob([csvContent], {type: "text/csv;charset=utf-8"});
+                saveAs(blob, `Trivia Scoresheet ${this.getTodayStr()}.csv`);
+            }
+
+            handleSaveScoresheetToJSON() {
+                const jsonContent = JSON.stringify({
+                    teams: this.state.teams,
+                    calculatedScores: this.state.calculatedScores
+                });
+                var blob = new Blob([jsonContent], {type: "text/json;charset=utf-8"});
+                saveAs(blob, `Trivia Scoresheet ${this.getTodayStr()}.json`);
             }
 
             render() {
@@ -553,7 +565,8 @@
                                 </div>                                
                             </div>
                             <div className="text-center mt-5">
-                                <button className="btn btn-sm btn-outline-secondary" onClick={this.handleSaveScoresheet}>💾 Save scoresheet to CSV</button>
+                                <button className="btn btn-sm btn-outline-secondary mr-1" onClick={this.handleSaveScoresheetToCSV}><span className="mr-2">💾</span>Save scoresheet to CSV</button>
+                                <button className="btn btn-sm btn-outline-secondary ml-1" onClick={this.handleSaveScoresheetToJSON}><span className="mr-2">💾</span>Save scoresheet to JSON</button>
                             </div>
                         </div>
                     )
