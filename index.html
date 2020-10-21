@@ -227,44 +227,6 @@
                     hasGameStarted: false,
                     teams: initialTeams,
                     calculatedScores: null,
-                    // teams: [
-                    //     {
-                    //         id: genHexId(),
-                    //         name: NORMAL_TEAMS[0],
-                    //         round1: '3',
-                    //         round2: '4',
-                    //         round3: 'QM',
-                    //         round4: '2'
-                    //     }, {
-                    //         id: genHexId(),
-                    //         name: NORMAL_TEAMS[1],
-                    //         round1: '1',
-                    //         round2: 'QM',
-                    //         round3: '4',
-                    //         round4: '2'
-                    //     }, {
-                    //         id: genHexId(),
-                    //         name: NORMAL_TEAMS[2],
-                    //         round1: '5',
-                    //         round2: '3',
-                    //         round3: '2',
-                    //         round4: 'QM'
-                    //     }, {
-                    //         id: genHexId(),
-                    //         name: NORMAL_TEAMS[3],
-                    //         round1: 'QM',
-                    //         round2: '2',
-                    //         round3: '4',
-                    //         round4: '4'
-                    //     }, {
-                    //         id: genHexId(),
-                    //         name: NORMAL_TEAMS[4],
-                    //         round1: '3',
-                    //         round2: '4',
-                    //         round3: '3',
-                    //         round4: '3'
-                    //     }, 
-                    // ]
                 };
                 this.handleAddTeam = this.handleAddTeam.bind(this);
                 this.handleRemoveTeam = this.handleRemoveTeam.bind(this);
@@ -549,7 +511,7 @@
                         lastTeamsTieStr = " (TIE!)"
                     }
                     // Random QMs for next week
-                    var randomOtherTeamsEls = this.state.calculatedScores.filter(cs => {
+                    var randomOtherTeamsEls = shuffleArray(this.state.calculatedScores).filter(cs => {
                         return cs.total != firstPlaceScore && cs.total != secondPlaceScore && cs.total != lastPlaceScore;
                     }).map(cs => <li key={cs.id}>{cs.name}</li>);
                     if (randomOtherTeamsEls.length == 0) {
