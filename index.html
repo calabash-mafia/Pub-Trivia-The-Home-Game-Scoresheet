@@ -545,11 +545,11 @@
                         winningTeamsTieStr = "s (TIE!)"
                     }
                     // Determine second place
-                    var secondTeamsEls = this.state.calculatedScores.filter(cs => cs.total == secondPlaceScore).map(cs => <li key={cs.id}>{cs.name}</li>);
-                    var secondTeamsTieStr = null;
-                    if (secondTeamsEls.length > 1) {
-                        secondTeamsTieStr = " (TIE!)"
-                    }
+                    // var secondTeamsEls = this.state.calculatedScores.filter(cs => cs.total == secondPlaceScore).map(cs => <li key={cs.id}>{cs.name}</li>);
+                    // var secondTeamsTieStr = null;
+                    // if (secondTeamsEls.length > 1) {
+                    //     secondTeamsTieStr = " (TIE!)"
+                    // }
                     // Determine last place
                     var lastTeamsEls = this.state.calculatedScores.filter(cs => cs.total == lastPlaceScore).map(cs => <li key={cs.id}>{cs.name}</li>);
                     var lastTeamsTieStr = null;
@@ -558,12 +558,13 @@
                     }
                     // Random QMs for next week
                     var randomOtherTeamsEls = shuffleArray(this.state.calculatedScores).filter(cs => {
-                        return cs.total != firstPlaceScore && cs.total != secondPlaceScore && cs.total != lastPlaceScore;
+                        // return cs.total != firstPlaceScore && cs.total != secondPlaceScore && cs.total != lastPlaceScore;
+                        return cs.total != firstPlaceScore && cs.total != lastPlaceScore;
                     }).map(cs => <li key={cs.id}>{cs.name}</li>);
                     if (randomOtherTeamsEls.length == 0) {
                         randomOtherTeamsEls = [
                             <li key='whack1'>🤯🤯🤯</li>,
-                            <li key='whack2'>ALL TEAMS FIRST, SECOND, OR LAST PLACE!?!?!?</li>,
+                            <li key='whack2'>ALL TEAMS FIRST OR LAST PLACE!?!?!?</li>,
                             <li key='whack3'>🤯🤯🤯</li>
                         ];
                     }
@@ -572,25 +573,19 @@
                         <div id="final-results" className="jumbotron mt-5">
                             <h1 className="display-3">Final results</h1>
                             <div className="row">
-                                <div className="col-sm-3">
+                                <div className="col-sm-4">
                                     <h3>Winner{winningTeamsTieStr}</h3>
                                     <ul>
                                         {winningTeamsEls}
                                     </ul>
                                 </div>
-                                <div className="col-sm-3">
-                                    <h3>Second place{secondTeamsTieStr}</h3>
-                                    <ul>
-                                        {secondTeamsEls}
-                                    </ul>
-                                </div>
-                                <div className="col-sm-3">
+                                <div className="col-sm-4">
                                     <h3>Last place{lastTeamsTieStr}</h3>
                                     <ul>
                                         {lastTeamsEls}
                                     </ul>
                                 </div>
-                                <div className="col-sm-3">
+                                <div className="col-sm-4">
                                     <h3>Everybody else</h3>
                                     <ol style={{listStyle: 'lower-alpha'}}>
                                         {randomOtherTeamsEls}
