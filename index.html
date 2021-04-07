@@ -40,30 +40,43 @@
         */
 
         body {
-            color: #800000;
-            background-color: rgb(214 214 206 / 50%);
-            font-family: 'Syne Mono', monospace;
+            /* color: #800000; */
+            /* background-color: rgb(214 214 206 / 50%); */
+            color: #ff6392;
+            background-color: #f9f9f9;
+            /* font-family: 'Syne Mono', monospace; */
+            font-family: "Comic Sans MS", "Comic Sans", cursive;
+
         }
 
         h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
-            font-family: 'Syne Mono', monospace;
+            /* font-family: 'Syne Mono', monospace; */
+            font-family: "Comic Sans MS", "Comic Sans", cursive;
+
             font-weight: 700;
         }
 
         button, input, optgroup, select, textarea, #footer, #final-results .btn {
-            font-family: 'VT323', monospace;
+            /* font-family: 'VT323', monospace; */
+            font-family: Papyrus;
         }
 
         .btn-primary {
-            background-color: #155F83;
-            border-color: #155F83;
+            /* background-color: #155F83; */
+            /* border-color: #155F83; */
+            background-color: #5aa9e6;
+            border-color: #5aa9e6;
         }
         .btn-primary:hover, .btn-primary:not(:disabled):not(.disabled):active {
-            background-color: #5B8FA8;
-            border-color: #0F425C;
+            /* background-color: #5B8FA8; */
+            /* border-color: #0F425C; */
+            border-color: #ff6392;
+            background-color: #ffe45e;
+            color: #5aa9e6;
         }
         .text-muted {
-            color: #767676;
+            /* color: #767676; */
+            color: #7fc8f8 !important;
         }
         .alert.alert-warning {
             background-color: #FFB547;
@@ -74,12 +87,16 @@
             color: #58593F;
         }
         .btn.btn-danger {
-            background-color: #8F3931;
-            border-color: #8F3931;
+            /* background-color: #8F3931; */
+            /* border-color: #8F3931; */
+            background-color: #7fc8f8;
+            border-color: #7fc8f8;
         }
         .btn.btn-danger:hover, .btn-danger:not(:disabled):not(.disabled):active {
-            background-color: #642822;
-            border-color: #642822;
+            /* background-color: #642822; */
+            /* border-color: #642822; */
+            background-color: #ffe45e;
+            border-color: #ffe45e;
         }
         .form-control {
             border-color: #767676;
@@ -91,10 +108,12 @@
         #final-results {
             border-color: #155F83;
             border-width: 4px;
-            background-color: rgb(21 95 131 / .05);
+            /* background-color: rgb(21 95 131 / .05); */
+            background-color: #ffe45e;
         }
         #final-results h1 {
-            color: #155F83;
+            /* color: #155F83; */
+            color: #ff6392;
         }
         #final-results ul, #final-results ol {
             font-size: 1.25em;
@@ -122,18 +141,21 @@
 
         #footer {
             /* margin-top: 100px; */
-            background-color: #767676;
+            /* background-color: #767676; */
+            background-color: #f9f9f9;
             padding: 40px 0px;
-            color: #fff;
+            color: #7fc8f8;
         }
         #footer a {
-            color: #D6D6CE;
+            color: #7fc8f8;
         }
 
 
         #treelayer {
             margin-top: 40px;
-            background-image: url(jean_victor_balin_sapin_02_xmas_bw.svg);
+            /* background-image: url(jean_victor_balin_sapin_02_xmas_bw.svg); */
+            background-image: url(birthday-cake.svg);
+            background-size: contain;
             background-position: bottom;
             background-repeat: repeat-x;
             padding-bottom: 100px;
@@ -146,8 +168,13 @@
             background-color: transparent;
         }
         table thead {
-            background-color: #8A9045;
-            color: #fff;
+            /* background-color: #8A9045; */
+            /* color: #fff; */
+            background-color: #ffe45e;
+            color: #666;
+        }
+        .table thead th {
+            border-bottom: 8px solid #7fc8f8;
         }
         .table th, .table td {
             border-top: none;
@@ -606,7 +633,7 @@
                 var buttonStr = 'Tally up scores for round and whatnot';
                 return (
                     <div>
-                        <h1 className="mt-5 mb-0">Pub Trivia: The Home Game 🍻</h1>
+                        <h1 className="mt-5 mb-0">Pub Trivia: The Home Game 🍺</h1>
                         <p className="text-muted">For {this.getTodayStr()}</p>
                         <h2>Scoresheet</h2>
                         <div className="row mt-2">
@@ -631,7 +658,6 @@
                         {addTeamButton}
                         <div className="text-center">
                             <button type="button" className="btn btn-primary btn-lg mt-4" onClick={this.handleTallyRound} title="Tally up scores for round and whatnot">{buttonStr}</button>
-                            
                         </div>
                         {rankingTableEl}
                         {finalResultsEl}
