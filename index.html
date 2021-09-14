@@ -415,6 +415,9 @@
 
             handleTallyRound() {
                 console.log('handleTallyRound');
+				// Play beep boop -- source credit from https://www.tunepocket.com/royalty-free-music/robot-bo-beep-boop-loop-1/
+				var audio = new Audio('short-beep-boop.mp3');
+				audio.play();
                 // Calculate the scores
                 var calculatedScores = this.state.teams.map(t => {
                     // Initialize the team score dict
