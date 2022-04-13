@@ -150,12 +150,12 @@
         }
         #final-results #final-results-img {
             position: absolute;
-            padding-right: 20px;
-            bottom: 20px;
+            bottom: 150px;
             width: 35%;
-            mix-blend-mode: hard-light;
-            opacity: 20%;
-            right: 0;
+            mix-blend-mode: color-burn;
+            opacity: 40%;
+            left: -97px;
+            transform: rotate(90deg);
         }
 
         /* https://developer.mozilla.org/en-US/docs/Web/HTML/Element/blink */
@@ -449,8 +449,8 @@
             handleTallyRound() {
                 console.log('handleTallyRound');
 				// Play beep boop -- source credit from https://www.tunepocket.com/royalty-free-music/robot-bo-beep-boop-loop-1/
-				// var audio = new Audio('short-beep-boop.mp3');
-                var audio = new Audio('heart_will_go_on_fast.m4a');
+				var audio = new Audio('short-beep-boop.mp3');
+                // var audio = new Audio('heart_will_go_on_fast.m4a');
 				audio.play();
                 // Calculate the scores
                 var calculatedScores = this.state.teams.map(t => {
@@ -641,7 +641,7 @@
                     // Output the results
                     finalResultsEl = (
                         <div id="final-results" className="jumbotron mt-5">
-                            <img id="final-results-img" src="sinking.webp" />
+                            <img id="final-results-img" src="sandperson.webp" />
                             <h1 className="display-3">Final results</h1>
                             <div className="row">
                                 <div className="col-sm-4">
@@ -674,10 +674,10 @@
                 }
                 
                 var buttonStr = 'Tally up scores for round and whatnot';
-                buttonStr = <img src="kate_bow.webp" style={{border: "1px solid #fcbc74", width: 250}} />;
+                // buttonStr = <img src="sandperson.webp" style={{border: "1px solid #fcbc74", width: 250, mixBlendMode: "luminosity"}} />;
                 return (
                     <div>
-                        <div><img src="titanic_sinking.webp" style={{mixBlendMode: "lighten", position: "absolute", right: 0}} /></div>
+                        <div><img src="chewy_loop.webp" style={{mixBlendMode: "lighten", position: "absolute", right: 0}} /></div>
                         <h1 className="mt-5 mb-0">Pub Trivia: The Home Game</h1>
                         <p className="text-muted">For {this.getTodayStr()}</p>
                         <h2>Scoresheet</h2>
