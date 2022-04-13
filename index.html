@@ -16,13 +16,25 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.2/FileSaver.min.js" integrity="sha512-k8F8QynmFNURwbUJC8drKA+fo3YfNvjqKzStdydD6au+MzvxBoRnxH8E31RJXwDY9DrnEiPhh9wBoDSIxhkyHQ==" crossorigin="anonymous"></script>
 
     <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Pacifico&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Syne+Mono&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins&family=Zen+Dots&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Rubik+Beastly&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Ephesis&display=swap" rel="stylesheet">
+    <!-- <link href="https://fonts.googleapis.com/css2?family=VT323&family=Pacifico&display=swap" rel="stylesheet"> -->
+    <!-- <link href="https://fonts.googleapis.com/css2?family=Syne+Mono&display=swap" rel="stylesheet"> -->
+    <!-- <link href="https://fonts.googleapis.com/css2?family=Poppins&family=Zen+Dots&display=swap" rel="stylesheet"> -->
+    <!-- <link href="https://fonts.googleapis.com/css2?family=Rubik+Beastly&display=swap" rel="stylesheet"> -->
+    <!-- <link href="https://fonts.googleapis.com/css2?family=Ephesis&display=swap" rel="stylesheet"> -->
+    <link href="https://fonts.googleapis.com/css2?family=IM+Fell+DW+Pica:ital@0;1&display=swap" rel="stylesheet">
+
 
     <style>
+
+        @font-face {
+            font-family: 'trajanbold';
+            src: url('trajan_bold-webfont.woff2') format('woff2'),
+                 url('trajan_bold-webfont.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+
+        }
+
         /* Color palette:
         Maroon:  #800000
         Dark grey:  #767676
@@ -45,13 +57,15 @@
         body {
             /* color: #800000; */
             /* background-color: rgb(214 214 206 / 50%); */
-            color: #666666;
-            background-color: #f9f9f9;
+            color: #ededed;
+            background-color: #34343c;
             /* font-family: 'Syne Mono', monospace; */
             /* font-family: "Comic Sans MS", "Comic Sans", cursive; */
             /* font-family: 'Zen Dots', cursive; */
-	    font-family: 'Ephesis', cursive;
+	        /*font-family: 'Ephesis', cursive;*/
+            font-family: 'IM Fell DW Pica', cursive;
             font-size: 1.5em;
+            font-variant-caps: small-caps;
 
         }
 
@@ -60,7 +74,10 @@
             /* font-family: "Comic Sans MS", "Comic Sans", cursive; */
             /* font-family: 'Zen Dots', cursive; */
             /* font-weight: 700; */
-            font-family: 'Rubik Beastly', cursive;
+            /*font-family: 'Rubik Beastly', cursive;*/
+            font-family: 'trajanbold';
+            color: #fcbc74;
+            font-variant-caps: normal;
         }
 
         button, input, optgroup, select, textarea, #footer, #final-results .btn {
@@ -72,19 +89,19 @@
         .btn-primary {
             /* background-color: #155F83; */
             /* border-color: #155F83; */
-            background-color: #5aa9e6;
-            border-color: #5aa9e6;
+            background-color: #fcbc74;
+            border-color: #fcbc74;
         }
         .btn-primary:hover, .btn-primary:not(:disabled):not(.disabled):active {
             /* background-color: #5B8FA8; */
             /* border-color: #0F425C; */
             border-color: #666666;
-            background-color: #ffe45e;
-            color: #5aa9e6;
+            background-color: #fda29b;
+            color: #fff;
         }
         .text-muted {
             /* color: #767676; */
-            color: #7fc8f8 !important;
+            color: #fc847c !important;
         }
         .alert.alert-warning {
             background-color: #FFB547;
@@ -97,14 +114,14 @@
         .btn.btn-danger {
             /* background-color: #8F3931; */
             /* border-color: #8F3931; */
-            background-color: #7fc8f8;
-            border-color: #7fc8f8;
+            background-color: #fc847c;
+            border-color: #fc847c;
         }
         .btn.btn-danger:hover, .btn-danger:not(:disabled):not(.disabled):active {
             /* background-color: #642822; */
             /* border-color: #642822; */
-            background-color: #ffe45e;
-            border-color: #ffe45e;
+            background-color: #fda29b;
+            border-color: #fda29b;
         }
         .form-control {
             border-color: #767676;
@@ -114,14 +131,15 @@
             border-color: #FFA319;
         }
         #final-results {
-            border-color: #155F83;
+            border-color: #fc847c;
             border-width: 4px;
             /* background-color: rgb(21 95 131 / .05); */
-            background-color: #ffe45e;
+            background-color: #ededed;
+            position: relative;
         }
         #final-results h1 {
             /* color: #155F83; */
-            color: #666666;
+            color: #fc847c;
         }
         #final-results ul, #final-results ol {
             font-size: 1.25em;
@@ -129,6 +147,15 @@
         }
         #final-results p {
             color: #333;
+        }
+        #final-results #final-results-img {
+            position: absolute;
+            padding-right: 20px;
+            bottom: 20px;
+            width: 35%;
+            mix-blend-mode: hard-light;
+            opacity: 20%;
+            right: 0;
         }
 
         /* https://developer.mozilla.org/en-US/docs/Web/HTML/Element/blink */
@@ -152,10 +179,10 @@
             /* background-color: #767676; */
             background-color: #f9f9f9;
             padding: 40px 0px;
-            color: #7fc8f8;
+            color: #fc847c;
         }
         #footer a {
-            color: #7fc8f8;
+            color: #fc847c;
         }
 
 
@@ -163,15 +190,16 @@
             margin-top: 40px;
             /* background-image: url(jean_victor_balin_sapin_02_xmas_bw.svg); */
             /* background-image: url(birthday-cake.svg); */
-            background-image: url(mountain.svg);
+            background-image: url(titanic.png);
             background-size: contain;
             background-position: bottom;
             background-repeat: repeat-x;
-            padding-bottom: 100px;
+            padding-bottom: 150px;
         }
 
         table {
-            font-size: 1.4em;
+            // font-size: 1.4em;
+            background-color: #ededed;
         }
         table th, table td {
             background-color: transparent;
@@ -179,11 +207,11 @@
         table thead {
             /* background-color: #8A9045; */
             /* color: #fff; */
-            background-color: #ffe45e;
+            background-color: #fda29b;
             color: #666;
         }
         .table thead th {
-            border-bottom: 8px solid #7fc8f8;
+            border-bottom: 8px solid #fc847c;
         }
         .table th, .table td {
             border-top: none;
@@ -209,19 +237,20 @@
         <div id="trivia_scoresheet"></div>
     </div>
     
-    
     <div id="treelayer">&nbsp;</div>
+    <!--
     <div id="footer">
         <div class="container">
             <div>How was this made? <a href="https://pages.github.com/">GitHub Pages</a>, <a href="https://reactjs.org/">React</a>, <a href="https://getbootstrap.com/">Bootstrap</a>, <a href="https://bootswatch.com/sketchy/">Bootswatch Sketchy</a>, and a bunch of Javascript.</div>
         </div>
     </div>
+    -->
     <script type="text/babel">
 
         const RANDOM_TEAM_NAMES = ["Wide maintenance", "Jagged assistant", "Stale performance", "Loud history", "Thin confusion", "Learned database", "Good hospital", "Plain employee", "Fixed conclusion", "Glib magazine", "Wry inflation", "Best foundation", "Free director", "Two solution", "Grey cabinet", "Cute studio", "Cheap medicine", "Slim agency", "Wrong difference", "Far profession", "Drab article", "Ten cigarette", "Drunk equipment", "Eight tradition", "Old intention", "Pink assistance", "Quick charity", "Small video", "Green reaction", "Tan energy"];
-        const NORMAL_TEAMS = ["Pierre Burreaux", "BoJo does...", "Revenge of the...", "Team Suki", "Fetarogie and ...", "The Canucks...", "Krullin'...", "Bitsy and Fiancé", "Team Aimee +1"];
+        const NORMAL_TEAMS = ["Pierre Burreaux", "BoJo does...", "Revenge of the...", "Team Suki", "Fetarogie and ...", "The Canucks...", "Krullin'...", "Bitsy and Candidate", "Team Aimee +1"];
         const NUM_ROUNDS = 4;
-        const QM_DISPLAY_CHAR = '👑';
+        const QM_DISPLAY_CHAR = '🚢';
 
         // https://stackoverflow.com/a/58325961
         function genHexId() {
@@ -420,7 +449,8 @@
             handleTallyRound() {
                 console.log('handleTallyRound');
 				// Play beep boop -- source credit from https://www.tunepocket.com/royalty-free-music/robot-bo-beep-boop-loop-1/
-				var audio = new Audio('short-beep-boop.mp3');
+				// var audio = new Audio('short-beep-boop.mp3');
+                var audio = new Audio('heart_will_go_on_fast.m4a');
 				audio.play();
                 // Calculate the scores
                 var calculatedScores = this.state.teams.map(t => {
@@ -529,7 +559,7 @@
                 var addTeamButton = null;
                 var removeTeamButtonColHeader = null;
                 if (this.state.hasGameStarted === false) {
-                    addTeamButton = <button type="button" onClick={this.handleAddTeam} className="btn btn-sm btn-outline-dark mt-2" title="Add team">＋ Add team</button>;
+                    addTeamButton = <button type="button" onClick={this.handleAddTeam} className="btn btn-sm btn-dark mt-2" title="Add team">＋ Add team</button>;
                     removeTeamButtonColHeader = <div className="col">&nbsp;</div>;
                 }
                 // Ranking table
@@ -611,6 +641,7 @@
                     // Output the results
                     finalResultsEl = (
                         <div id="final-results" className="jumbotron mt-5">
+                            <img id="final-results-img" src="sinking.webp" />
                             <h1 className="display-3">Final results</h1>
                             <div className="row">
                                 <div className="col-sm-4">
@@ -643,9 +674,11 @@
                 }
                 
                 var buttonStr = 'Tally up scores for round and whatnot';
+                buttonStr = <img src="kate_bow.webp" style={{border: "1px solid #fcbc74", width: 250}} />;
                 return (
                     <div>
-                        <h1 className="mt-5 mb-0">Pub Trivia: The Home Game 👹</h1>
+                        <div><img src="titanic_sinking.webp" style={{mixBlendMode: "lighten", position: "absolute", right: 0}} /></div>
+                        <h1 className="mt-5 mb-0">Pub Trivia: The Home Game</h1>
                         <p className="text-muted">For {this.getTodayStr()}</p>
                         <h2>Scoresheet</h2>
                         <div className="row mt-2">
